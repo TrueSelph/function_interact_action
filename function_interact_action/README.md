@@ -82,7 +82,7 @@ Modify the parameters to balance performance, resource utilization, and predicti
 
 ### 3. Functions and Parameter Extraction
 
-The Function Interact Action interacts with various actions through defined functions which specify desired intents and associated parameters to extract. Utilize placeholders to handle dynamic data points such as datetime references or custom contextual values.
+The Function Interact Action interacts with various actions through defined functions which specify desired intents and associated parameters to extract. Utilize placeholders to handle dynamic data points such as datetime references or custom contextual values. Below is an example of a function definiton which may be placed within an interact action to make use of the function_interact_action.
 
 **Example configuration:**
 
@@ -142,64 +142,6 @@ placeholders:
 ```
 
 This approach ensures accurate, contextual parameter extraction particularly around time-sensitive and context-varying information.
-
----
-
-### Example Complete YAML Configuration
-
-A complete example configuration looks as follows:
-
-```yaml
-function_interact_action:
-  chained: false
-  strict: true
-  exceptions:
-    - PersonaInteractAction
-    - AlwaysExecuteCustomAction
-
-  history_size: 5
-  max_statement_length: 500
-  model_action: LangChainModelAction
-  model_name: gpt-4o
-  model_temperature: 0.2
-  model_max_tokens: 2048
-
-  functions:
-    - type: function
-      function:
-        name: "extract_user_details"
-        description: "Extracted information about user's personal details, <custom_placeholder>, request for a specific service or scheduling preferences. Use the current date <datetime> for parsing date or time references. Extract information concerning the user wanting to bring in a machine or vehicle."
-        parameters:
-          type: object
-          properties:
-            description_of_issue:
-              type: string
-              description: "Details on user's vehicle or machine issue."
-            first_name:
-              type: string
-              description: "The user's first name."
-            last_name:
-              type: string
-              description: "The user's last name."
-          required:
-            - description_of_issue
-      placeholders:
-        custom_placeholder: "scheduled service inquiry"
-
-    - type: function
-      function:
-        name: "extract_confirmation_choice"
-        description: "Determine user's confirmation or cancellation of provided draft report (Affirmatives: 'yes', 'ok', 'post it'; Negatives: 'no', 'cancel', 'nah')."
-        parameters:
-          type: object
-          properties:
-            confirmation_choice:
-              type: string
-              enum: ["true", "false"]
-              description: "'true' for affirmatives, 'false' for negatives."
-          required:
-            - confirmation_choice
-```
 
 ---
 
