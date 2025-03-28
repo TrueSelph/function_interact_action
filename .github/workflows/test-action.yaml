@@ -1,4 +1,4 @@
-name: Running tests for jivas IntentInteractAction
+name: Running tests for jivas FunctionInteractAction
 on:
   pull_request:
   push:

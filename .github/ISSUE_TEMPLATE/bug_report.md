@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to report any bugs in the jivas IntentInteractAction.
+about: Create a report to report any bugs in the jivas FunctionInteractAction.
 title: "[BUG]: "
 labels: ''
 assignees: ''

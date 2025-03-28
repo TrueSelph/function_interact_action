@@ -26,7 +26,7 @@ The **Function Interact Action** is designed to determine the most appropriate a
 The default configuration for this action is highly customizable:
 
 - **chained** (`bool`, default=`False`):
-  If set to `true`, the action executes only when one or more of its registered actions have already been queued by a preceding Intent Interact Action.
+  If set to `true`, the action executes only when one or more of its registered actions have already been queued by a preceding Function Interact Action.
 
 - **strict** (`bool`, default=`True`):
   Enforces strict mode execution. If enabled, it executes only those actions belonging to explicitly matched functions.
@@ -56,7 +56,7 @@ This section details the process and parameters for configuring the Function Int
 The default configurable options to control action execution behavior:
 
 ```yaml
-chained: false                    # if chained, only executes when one of its actions added by the intent interact action is queued.
+chained: false                    # if chained, only executes when one of its actions added by the Function Interact Action is queued.
 strict: true                      # if strict, only actions belonging to matched functions will be executed.
 timezone: "America/Guyana"        # The timezone to be used for the datetime placeholder
 exceptions:                       # list of actions which are included in intent, regardless

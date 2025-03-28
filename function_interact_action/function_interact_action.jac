@@ -15,7 +15,7 @@ node FunctionInteractAction :InteractAction: {
     static has logger:Logger = logging.getLogger(__name__);
 
     has strict:bool = False; # if strict, only actions belonging to matched functions will be executed.
-    has chained:bool = False; # if chained, only executes when one of its actions added by the intent interact action is queued.
+    has chained:bool = False; # if chained, only executes when one of its actions added by the Function Interact Action is queued.
     has history:bool = False;
     has history_size:int = 3;
     has max_statement_length:int = 500;
@@ -30,7 +30,7 @@ node FunctionInteractAction :InteractAction: {
     can touch(visitor: interact_graph_walker) -> bool {
         # authorize the interact to run
 
-        if(self.chained and self.get_agent().get_actions().get(action_label="IntentInteractAction")) {
+        if(self.chained and self.get_agent().get_actions().get(action_label="FunctionInteractAction")) {
             function_index = self.get_function_index(visitor);
             for intent in visitor.interaction_node.get_intents() {
                 if intent in function_index.keys() and visitor.utterance {

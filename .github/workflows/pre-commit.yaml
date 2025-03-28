@@ -1,14 +1,14 @@
-name: Linting and Pre-commit checks for jivas IntentInteractAction
+name: Linting and Pre-commit checks for jivas FunctionInteractAction
 
 on:
   pull_request:
     paths:
-      - "intent_interact_action/**"
+      - "function_interact_action/**"
   push:
     branches:
       - main
     paths:
-      - "intent_interact_action/**"
+      - "function_interact_action/**"
 
 jobs:
   pre-commit-jaclang:
