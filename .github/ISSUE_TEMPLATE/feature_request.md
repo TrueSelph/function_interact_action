@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an idea for the jivas IntentInteractAction.
+about: Suggest an idea for the jivas FunctionInteractAction.
 title: "[Feature Request]: "
 labels: ''
 assignees: ''
