@@ -31,41 +31,41 @@ node FunctionInteractAction :InteractAction: {
         # authorize the interact to run
 
         if(self.chained and self.get_agent().get_actions().get(action_label="IntentInteractAction")) {
-            function_index = self.get_function_index(visitor); 
+            function_index = self.get_function_index(visitor);
             for intent in visitor.interaction_node.get_intents() {
                 if intent in function_index.keys() and visitor.utterance {
                     return True;
                 }
             }
         } elif visitor.utterance {
-            return True; 
+            return True;
         }
     }
 
     can execute(visitor: interact_graph_walker) -> dict {
-        
+
         # load up all functions by interact actions
-        function_index = self.get_function_index(visitor); 
+        function_index = self.get_function_index(visitor);
         # get a consolidated list of functions for chat completions
         functions = [item for sublist in function_index.values() for item in sublist];
-        
+
         if(function_index) {
 
             tools = self.process_functions(visitor, functions);
-            
+
             for tool in tools {
                 # remap the resulting function to the action it came from
                 action_label = self.get_action_by_function(index = function_index, function_name = tool.get('name', None));
                 visitor.interaction_node.add_function(action_label = action_label, function = tool);
             }
-                       
+
         }
 
         return visitor.export();
     }
 
     can process_functions(visitor: interact_graph_walker, functions:list, kwargs:dict = {}) -> list {
-        
+
         # Process keyword arguments to configure function behavior
         if "history" in kwargs {
             history = kwargs["history"];
@@ -113,7 +113,7 @@ node FunctionInteractAction :InteractAction: {
 
         prompt_messages = [];
         if (history) {
-            # grab the history        
+            # grab the history
             statements = visitor.frame_node.get_transcript_statements(interactions = history_size, max_statement_length = max_statement_length);
 
             if (statements) {
@@ -127,10 +127,10 @@ node FunctionInteractAction :InteractAction: {
             prompt_messages = [
                 {"human": visitor.utterance}
             ];
-        }                                    
-        
+        }
+
         if(model_action := self.get_agent().get_actions().get(action_label=model_action)) {
-            
+
             if (model_action_result := model_action.call_model(
                 prompt_messages = prompt_messages,
                 prompt_variables = {},
@@ -177,7 +177,7 @@ node FunctionInteractAction :InteractAction: {
                         else{
                             item['function']['description'] = self.process_placeholders(description);
                         }
-                        
+
                     }
                 }
                 function_index[action_node.label] = functions_copy;
