@@ -1,6 +1,7 @@
 import:py json;
 import:py logging;
 import:py traceback;
+import:py from typing { Union }
 import:py from logging { Logger }
 import:py from jivas.agent.modules.agentlib.utils { Utils }
 import:jac from jivas.agent.action.actions { Actions }
@@ -220,16 +221,35 @@ node FunctionInteractAction :InteractAction: {
         return None;
     }
 
-    can healthcheck() -> bool {
-        try {
-            if(self.model_action and self.model_name){
-                return True;
-            }
-            return False;
-        } except Exception as e {
-            self.logger.error(f"An exception occurred in {self.label}:\n{traceback.format_exc()}\n");
-            return False;
+    can healthcheck() -> Union[bool, dict] {
+
+        if(not self.model_action) {
+            return {
+                "status": False,
+                "message": "Model action not specified.",
+                "severity": "error"
+            };
         }
+
+        if(not self.model_name) {
+            return {
+                "status": False,
+                "message": "Model name not specified.",
+                "severity": "error"
+            };
+        }
+
+        model_action = self.get_agent().get_actions().get(action_label=model_action);
+        if not model_action {
+            return {
+                "status": False,
+                "message": f"Model Action is not registered. {self.model_action}",
+                "severity": "error"
+            };
+        }
+
+        return True;
+
     }
 
 }
