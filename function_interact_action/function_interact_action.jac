@@ -157,14 +157,14 @@ node FunctionInteractAction :InteractAction: {
         function_index = {};
 
         # get a list of all interact actions
-        all_actions = self.get_agent().get_actions().get_all(filter_interact_actions=True, filter_enabled_actions=True);
+        all_actions = self.get_agent().get_actions().get_all(only_interact_actions=True, only_enabled=True);
 
         for action_node in all_actions {
             # only enabled actions which implement functions are of interest to us
             if(action_node.functions and action_node.label != self.get_type()) {
                 functions_copy = action_node.functions.copy();
                 for item in functions_copy {
-                    if(description := item['function']['description']){
+                    if(description := item.get("function", {}).get("description")){
                         # checks for custom placeholders  that should be a dict of placeholder:value pairs
                         if('placeholders' in item['function']){
                             placeholders = item['function']['placeholders'];
