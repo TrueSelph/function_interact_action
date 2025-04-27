@@ -239,7 +239,7 @@ node FunctionInteractAction :InteractAction: {
             };
         }
 
-        model_action = self.get_agent().get_actions().get(action_label=model_action);
+        model_action = self.get_agent().get_actions().get(action_label=self.model_action);
         if not model_action {
             return {
                 "status": False,
