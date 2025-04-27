@@ -1,6 +1,7 @@
 import:py json;
 import:py logging;
 import:py traceback;
+import:py from typing { Union }
 import:py from logging { Logger }
 import:py from jivas.agent.modules.agentlib.utils { Utils }
 import:jac from jivas.agent.action.actions { Actions }
@@ -157,14 +158,14 @@ node FunctionInteractAction :InteractAction: {
         function_index = {};
 
         # get a list of all interact actions
-        all_actions = self.get_agent().get_actions().get_all(filter_interact_actions=True, filter_enabled_actions=True);
+        all_actions = self.get_agent().get_actions().get_all(only_interact_actions=True, only_enabled=True);
 
         for action_node in all_actions {
             # only enabled actions which implement functions are of interest to us
             if(action_node.functions and action_node.label != self.get_type()) {
                 functions_copy = action_node.functions.copy();
                 for item in functions_copy {
-                    if(description := item['function']['description']){
+                    if(description := item.get("function", {}).get("description")){
                         # checks for custom placeholders  that should be a dict of placeholder:value pairs
                         if('placeholders' in item['function']){
                             placeholders = item['function']['placeholders'];
@@ -220,16 +221,35 @@ node FunctionInteractAction :InteractAction: {
         return None;
     }
 
-    can healthcheck() -> bool {
-        try {
-            if(self.model_action and self.model_name){
-                return True;
-            }
-            return False;
-        } except Exception as e {
-            self.logger.error(f"An exception occurred in {self.label}:\n{traceback.format_exc()}\n");
-            return False;
+    can healthcheck() -> Union[bool, dict] {
+
+        if(not self.model_action) {
+            return {
+                "status": False,
+                "message": "Model action not specified.",
+                "severity": "error"
+            };
         }
+
+        if(not self.model_name) {
+            return {
+                "status": False,
+                "message": "Model name not specified.",
+                "severity": "error"
+            };
+        }
+
+        model_action = self.get_agent().get_actions().get(action_label=self.model_action);
+        if not model_action {
+            return {
+                "status": False,
+                "message": f"Model Action is not registered. {self.model_action}",
+                "severity": "error"
+            };
+        }
+
+        return True;
+
     }
 
 }
