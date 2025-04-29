@@ -17,14 +17,14 @@ node FunctionInteractAction :InteractAction: {
 
     has strict:bool = False; # if strict, only actions belonging to matched functions will be executed.
     has chained:bool = False; # if chained, only executes when one of its actions added by the Function Interact Action is queued.
-    has history:bool = False;
-    has history_size:int = 3;
+    has history:bool = False; # utilize history when running functions
+    has history_size:int = 3; # the number of interactions in conversational history to use
     has max_statement_length:int = 500;
     has timezone:str = "America/Guyana";
     has model_action:str = "LangChainModelAction";
     has model_name:str = "gpt-4o-mini";
     has model_temperature:float = 0.2;
-    has model_max_tokens:int = 2048;
+    has model_max_tokens:int = 4096;
     has exceptions:list = [];
 
 
@@ -187,6 +187,7 @@ node FunctionInteractAction :InteractAction: {
 
         return function_index;
     }
+
     can process_placeholders(description:str, placeholders:Optional[dict]={}) -> str {
         # process placeholders enlclosed in <> in function descriptions
         current_datetime = Utils.date_now(self.timezone, "%Y-%m-%d %H:%M:%S");
