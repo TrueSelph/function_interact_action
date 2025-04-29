@@ -43,7 +43,7 @@ The default configuration for this action is highly customizable:
 
 - **Jivas:** `^2.0.0`
 - **Actions:**
-  - [`jivas/langchain_model_action`](https://github.com/jivas/langchain_model_action): `^0.0.1`
+  - [`jivas/langchain_model_action`](https://github.com/jivas/langchain_model_action): `>=0.0.1`
 
 ---
 
@@ -70,7 +70,7 @@ Consider your interaction workflows when adjusting these parameters. For broader
 The Function Interact Action uses a language model and conversational context to infer intents and parameter extraction accurately. Adjust these settings to tune model behavior and accuracy:
 
 ```yaml
-history_size: 5                   # Number of recent conversations considered
+history_size: 5                   # Number of recent conversational interactions considered
 max_statement_length: 500         # Maximum input text length for processing
 model_action: LangChainModelAction # Language model action to use
 model_name: gpt-4o                # Model identifier used for inference
