@@ -31,7 +31,7 @@ node FunctionInteractAction :InteractAction: {
     can touch(visitor: interact_graph_walker) -> bool {
         # authorize the interact to run
 
-        if(self.chained and self.get_agent().get_actions().get(action_label="FunctionInteractAction")) {
+        if(self.chained and self.get_agent().get_actions().get(action_label="IntentInteractAction")) {
             function_index = self.get_function_index(visitor);
             for intent in visitor.interaction_node.get_intents() {
                 if intent in function_index.keys() and visitor.utterance {
@@ -67,50 +67,14 @@ node FunctionInteractAction :InteractAction: {
 
     can process_functions(visitor: interact_graph_walker, functions:list, kwargs:dict = {}) -> list {
 
-        # Process keyword arguments to configure function behavior
-        if "history" in kwargs {
-            history = kwargs["history"];
-        }else {
-            history = self.history;
-        }
-
-        if "history_size" in kwargs {
-            history_size = kwargs["history_size"];
-        }else {
-            history_size = self.history_size;
-        }
-
-        if "max_statement_length" in kwargs {
-            max_statement_length = kwargs["max_statement_length"];
-        }else {
-            max_statement_length = self.max_statement_length;
-        }
-
-        if "model_action" in kwargs {
-            model_action = kwargs["model_action"];
-        }else {
-            model_action = self.model_action;
-        }
-
-        if "model_name" in kwargs {
-            model_name = kwargs["model_name"];
-        }else {
-            model_name = self.model_name;
-        }
-
-        if "model_temperature" in kwargs {
-            model_temperature = kwargs["model_temperature"];
-        }else {
-            model_temperature = self.model_temperature;
-        }
-
-        if "model_max_tokens" in kwargs {
-            model_max_tokens = kwargs["model_max_tokens"];
-        }else {
-            model_max_tokens = self.model_max_tokens;
-        }
-
-
+        # Process keyword arguments to configure function behavior with fallback to defaults
+        history = kwargs.get("history", self.history);
+        history_size = kwargs.get("history_size", self.history_size);
+        max_statement_length = kwargs.get("max_statement_length", self.max_statement_length);
+        model_action = kwargs.get("model_action", self.model_action);
+        model_name = kwargs.get("model_name", self.model_name);
+        model_temperature = kwargs.get("model_temperature", self.model_temperature);
+        model_max_tokens = kwargs.get("model_max_tokens", self.model_max_tokens);
 
         prompt_messages = [];
         if (history) {
