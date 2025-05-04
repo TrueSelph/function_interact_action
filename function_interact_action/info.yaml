@@ -13,6 +13,7 @@ package:
     order:
       weight: 0
       before: all
+      after: jivas/intent_interact_action
   dependencies:
     jivas: ^2.0.0
     actions:
