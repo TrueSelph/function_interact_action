@@ -1,16 +1,16 @@
-import:py json;
-import:py logging;
-import:py traceback;
-import:py from typing { Union }
-import:py from logging { Logger }
-import:py from jivas.agent.modules.agentlib.utils { Utils }
-import:jac from jivas.agent.action.actions { Actions }
-import:jac from jivas.agent.action.interact_action { InteractAction }
-import:jac from jivas.agent.action.interact_graph_walker { interact_graph_walker }
+import json;
+import logging;
+import traceback;
+import from typing { Union }
+import from logging { Logger }
+import from jivas.agent.modules.agentlib.utils { Utils }
+import from jivas.agent.action.actions { Actions }
+import from jivas.agent.action.interact_action { InteractAction }
+import from jivas.agent.action.interact_graph_walker { interact_graph_walker }
 
 
-node FunctionInteractAction :InteractAction: {
-    # based on an utterance, classifies agaisnt registered intents
+node FunctionInteractAction(InteractAction) {
+    # based on an utterance, classifies against registered intents
 
     # set up logger
     static has logger:Logger = logging.getLogger(__name__);
@@ -28,7 +28,7 @@ node FunctionInteractAction :InteractAction: {
     has exceptions:list = [];
 
 
-    can touch(visitor: interact_graph_walker) -> bool {
+    def touch(visitor: interact_graph_walker) -> bool {
         # authorize the interact to run
 
         if(self.chained and self.get_agent().get_actions().get(action_label="IntentInteractAction")) {
@@ -43,7 +43,7 @@ node FunctionInteractAction :InteractAction: {
         }
     }
 
-    can execute(visitor: interact_graph_walker) -> dict {
+    def execute(visitor: interact_graph_walker) -> None {
 
         # load up all functions by interact actions
         function_index = self.get_function_index(visitor);
@@ -61,11 +61,9 @@ node FunctionInteractAction :InteractAction: {
             }
 
         }
-
-        return visitor.export();
     }
 
-    can process_functions(visitor: interact_graph_walker, functions:list, kwargs:dict = {}) -> list {
+    def process_functions(visitor: interact_graph_walker, functions:list, kwargs:dict = {}) -> list {
 
         # Process keyword arguments to configure function behavior with fallback to defaults
         history = kwargs.get("history", self.history);
@@ -99,12 +97,10 @@ node FunctionInteractAction :InteractAction: {
             if (model_action_result := model_action.call_model(
                 prompt_messages = prompt_messages,
                 prompt_variables = {},
-                kwargs = {
-                    "functions": functions,
-                    "model_name": model_name,
-                    "model_temperature": model_temperature,
-                    "model_max_tokens": model_max_tokens
-                },
+                functions = functions,
+                model_name = self.model_name,
+                model_temperature = self.model_temperature,
+                model_max_tokens = self.model_max_tokens,
                 interaction_node = visitor.interaction_node
             )) {
 
@@ -117,7 +113,7 @@ node FunctionInteractAction :InteractAction: {
         return [];
     }
 
-    can get_function_index(visitor: interact_graph_walker) -> dict {
+    def get_function_index(visitor: interact_graph_walker) -> dict {
         # retrieves a dictionary of anchor statements from each action for classification; to be spawned on an agent
         function_index = {};
 
@@ -152,8 +148,8 @@ node FunctionInteractAction :InteractAction: {
         return function_index;
     }
 
-    can process_placeholders(description:str, placeholders:Optional[dict]={}) -> str {
-        # process placeholders enlclosed in <> in function descriptions
+    def process_placeholders(description:str, placeholders:Optional[dict]={}) -> str {
+        # process placeholders enclosed in <> in function descriptions
         current_datetime = Utils.date_now(self.timezone, "%Y-%m-%d %H:%M:%S");
         result_string = description.replace('<datetime>', current_datetime);
 
@@ -172,7 +168,7 @@ node FunctionInteractAction :InteractAction: {
         return result_string;
     }
 
-    can get_action_by_function(index:dict, function_name:str) {
+    def get_action_by_function(index:dict, function_name:str) {
         # searches function index and returns action by function name
 
         for (key, value) in index.items() {
@@ -186,7 +182,7 @@ node FunctionInteractAction :InteractAction: {
         return None;
     }
 
-    can healthcheck() -> Union[bool, dict] {
+    def healthcheck() -> Union[bool, dict] {
 
         if(not self.model_action) {
             return {
