@@ -6,11 +6,11 @@ import from logging { Logger }
 import from jivas.agent.modules.agentlib.utils { Utils }
 import from jivas.agent.action.actions { Actions }
 import from jivas.agent.action.interact_action { InteractAction }
-import from jivas.agent.action.interact_graph_walker { interact_graph_walker }
+import from jivas.agent.action.agent_graph_walker { agent_graph_walker }
 
 
 node FunctionInteractAction(InteractAction) {
-    # based on an utterance, classifies against registered intents
+    # based on an utterance, classifies agaisnt registered intents
 
     # set up logger
     static has logger:Logger = logging.getLogger(__name__);
@@ -28,7 +28,7 @@ node FunctionInteractAction(InteractAction) {
     has exceptions:list = [];
 
 
-    def touch(visitor: interact_graph_walker) -> bool {
+    def touch(visitor: agent_graph_walker) -> bool {
         # authorize the interact to run
 
         if(self.chained and self.get_agent().get_actions().get(action_label="IntentInteractAction")) {
@@ -43,7 +43,7 @@ node FunctionInteractAction(InteractAction) {
         }
     }
 
-    def execute(visitor: interact_graph_walker) -> None {
+    def execute(visitor: agent_graph_walker) -> None {
 
         # load up all functions by interact actions
         function_index = self.get_function_index(visitor);
@@ -63,7 +63,7 @@ node FunctionInteractAction(InteractAction) {
         }
     }
 
-    def process_functions(visitor: interact_graph_walker, functions:list, kwargs:dict = {}) -> list {
+    def process_functions(visitor: agent_graph_walker, functions:list, kwargs:dict = {}) -> list {
 
         # Process keyword arguments to configure function behavior with fallback to defaults
         history = kwargs.get("history", self.history);
@@ -74,22 +74,20 @@ node FunctionInteractAction(InteractAction) {
         model_temperature = kwargs.get("model_temperature", self.model_temperature);
         model_max_tokens = kwargs.get("model_max_tokens", self.model_max_tokens);
 
-        prompt_messages = [];
+        # prepare the prompt with utterance
+        prompt_messages = [
+            {"system": self.prompt},
+            {"human": "{utterance}"}
+        ];
+
         if (history) {
             # grab the history
             statements = visitor.frame_node.get_transcript_statements(interactions = history_size, max_statement_length = max_statement_length);
 
             if (statements) {
-                prompt_messages.extend(statements);
-                self.logger.debug(f"history: {json.dumps(statements)}");
+                # prepend statements to the prompt messages
+                prompt_messages = statements + prompt_messages;
             }
-
-            # prompt_messages.extend([{"human": visitor.utterance}]);
-        } else {
-            # here we cater to whether we have context information or not..
-            prompt_messages = [
-                {"human": visitor.utterance}
-            ];
         }
 
         if(model_action := self.get_agent().get_actions().get(action_label=model_action)) {
@@ -113,7 +111,7 @@ node FunctionInteractAction(InteractAction) {
         return [];
     }
 
-    def get_function_index(visitor: interact_graph_walker) -> dict {
+    def get_function_index(visitor: agent_graph_walker) -> dict {
         # retrieves a dictionary of anchor statements from each action for classification; to be spawned on an agent
         function_index = {};
 
@@ -149,7 +147,7 @@ node FunctionInteractAction(InteractAction) {
     }
 
     def process_placeholders(description:str, placeholders:Optional[dict]={}) -> str {
-        # process placeholders enclosed in <> in function descriptions
+        # process placeholders enlclosed in <> in function descriptions
         current_datetime = Utils.date_now(self.timezone, "%Y-%m-%d %H:%M:%S");
         result_string = description.replace('<datetime>', current_datetime);
 
