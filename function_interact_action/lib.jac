@@ -1,1 +1,3 @@
-include:jac function_interact_action;
+import from actions.jivas.function_interact_action {
+    function_interact_action
+}

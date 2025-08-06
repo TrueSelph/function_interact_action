@@ -11,3 +11,6 @@
 ## 0.0.4
 - Patched bug in touch() implementation
 - Minor code structure refactoring
+
+# 0.1.0
+- Updated to support Jivas 2.1.0
