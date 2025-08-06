@@ -3,7 +3,7 @@ import logging;
 import traceback;
 import from typing { Union }
 import from logging { Logger }
-import from jivas.agent.modules.agentlib.utils { Utils }
+import from jivas.agent.modules.system.common { date_now }
 import from jivas.agent.action.actions { Actions }
 import from jivas.agent.action.interact_action { InteractAction }
 import from jivas.agent.action.agent_graph_walker { agent_graph_walker }
@@ -148,7 +148,7 @@ node FunctionInteractAction(InteractAction) {
 
     def process_placeholders(description:str, placeholders:Optional[dict]={}) -> str {
         # process placeholders enlclosed in <> in function descriptions
-        current_datetime = Utils.date_now(self.timezone, "%Y-%m-%d %H:%M:%S");
+        current_datetime = date_now(self.timezone, "%Y-%m-%d %H:%M:%S");
         result_string = description.replace('<datetime>', current_datetime);
 
         if(placeholders) {
